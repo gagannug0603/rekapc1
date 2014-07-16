@@ -1,0 +1,84 @@
+:javascript
+  $(function(){
+    $('.to-add').change(function() {
+      var total = 0;
+
+      $('.to-add').each(function () {
+        total += parseInt($(this).val());
+      });
+
+      $('#total').val(total);
+    });
+    $('#total').val(0);
+  })
+
+.row
+  .col-md-3
+    Share:
+    .addthis_sharing_toolbox
+    %b Jika didapati isian ngasal, account kamu akan diblock & semua entry kamu akan dihapus
+
+    = form_for @crowd_input do |f|
+      - if @crowd_input.errors.any?
+        #error_explanation
+          %h4= "#{pluralize(@crowd_input.errors.count, "error")} prohibited this crowd_input from being saved:"
+          %ul
+            - @crowd_input.errors.full_messages.each do |msg|
+              %li= msg
+      .form-group
+        = f.hidden_field :tps_id
+      .form-group
+        = f.label :Prabowo
+        = f.number_field :prabowo_count, :class => 'form-control to-add', :autofocus =>''
+      .form-group
+        = f.label :Jokowi
+        = f.number_field :jokowi_count, :class => 'form-control to-add'
+      .form-group
+        = f.label :Total
+        = number_field :total, 0, :id =>'total', :class => 'form-control', :disabled => ''
+      .form-group
+        = f.label 'Tidak sah'
+        = f.number_field :broken_count, :class => 'form-control'
+      .form-group
+        = f.label :problem
+        = f.text_area :problem, :class => 'form-control'
+      .actions
+        = f.submit 'Save', :class => 'btn btn-primary'
+        = link_to "Lihat hasil", crowd_inputs_path, :class => 'btn btn-default'
+
+    %h4 Blocked users
+    %table.table.table-striped
+      -@banned_users.each do |u|
+        %tr
+          %td= u.name
+  .col-md-7
+    = image_tag @crowd_input.c1_url, size:"600x800"
+  .col-md-2
+    %table.table.table-striped
+      %tr
+        %td Isian saya:
+        %td
+          = @my_progress
+          forms
+      %tr
+        %td Total terisi:
+        %td
+          = @global_progress
+          forms
+
+      %tr
+        %td Prabowo:
+        %td= @count_prabowo
+      %tr
+        %td Jokowi:
+        %td= @count_jokowi
+      %tr
+        %td Rusak:
+        %td= @count_broken
+
+    %h4 Top Contributors
+    %table.table.table-striped
+      -@top_contributors.each do |tc|
+        %tr
+          %td= tc.user.name
+          %td= tc.amount
